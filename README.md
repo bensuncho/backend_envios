@@ -16,4 +16,7 @@ codigo en JS en la BD
 
 https://www.mongodb.com/basics/mongodb-auto-increment
 
-Tambien se pueden implementar con  JS en el mismo programa. Es otra forma yo opte por esta.
+Tambien se pueden implementar con instalando  mongoose-sequence 
+
+https://www.npmjs.com/package/mongoose-sequence
+
