@@ -58,7 +58,12 @@ async function Login(req, res) {
     });
 
     return res
-      .cookie("access_token", token, { httpOnly: true })
+      .cookie("access_token", token, {
+        httpOnly: true,
+        secure: true,
+        samesite: "None",
+        MaxAge: 60 * 60 * 1000,
+      })
       .status(200)
       .json({ message: "token asignado" });
   } catch (e) {
@@ -66,4 +71,45 @@ async function Login(req, res) {
   }
 }
 
-module.exports = { Register, Login };
+const Refresh = (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+
+  const refreshToken = cookies.jwt;
+
+  jwt.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET,
+    async (err, decoded) => {
+      if (err) return res.status(403).json({ message: "Forbidden" });
+
+      const foundUser = await User.findOne({
+        username: decoded.username,
+      }).exec();
+
+      if (!foundUser) return res.status(401).json({ message: "Unauthorized" });
+
+      const accessToken = jwt.sign(
+        {
+          UserInfo: {
+            username: foundUser.username,
+          },
+        },
+        process.env.JWT_KEY,
+        { expiresIn: "1d" }
+      );
+
+      res.json({ accessToken });
+    }
+  );
+};
+
+const Logout = (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(204); //No content
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  res.json({ message: "Cookie cleared" });
+};
+
+module.exports = { Register, Login, Refresh, Logout };

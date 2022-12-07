@@ -1,0 +1,4 @@
+PORT=3000
+DB_URI=mongodb+srv://enkanta_users:AsSgKiHp0KceR8SM@cluster0.fziupqr.mongodb.net/?retryWrites=true&w=majority
+HOSTNAME = 127.0.0.1
+JWT_KEY = "Cl4v3S3cr3t@197267567@3%&/$$··$$%%("
